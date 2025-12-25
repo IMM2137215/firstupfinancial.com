@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liability Waiver</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        h1 { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .content { margin-top: 30px; }
+        .section { margin-bottom: 20px; }
+        .signature-box { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 20px; display: flex; justify-content: space-between; }
+        .sign-line { width: 45%; }
+        .timestamp { font-size: 0.8em; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>HOLD HARMLESS AGREEMENT</h1>
+    
+    <div class="content">
+        <p>This Agreement is made on <strong>{{DATE}}</strong>, by and between <strong>First Up Financial</strong> ("Provider") and <strong>{{USER_NAME}}</strong> ("Client").</p>
+
+        <div class="section">
+            <h3>1. Indemnification</h3>
+            <p>The Client agrees to indemnify and hold harmless the Provider, its officers, agents, and employees from any and all claims, liabilities, demands, causes of action, damages, losses, and expenses, including reasonable attorneys' fees and costs, arising out of or directly related to the Services provided herein.</p>
+        </div>
+
+        <div class="section">
+            <h3>2. Limitation of Liability</h3>
+            <p>The Provider shall not be liable for any special, incidental, indirect, or consequential damages arising out of the performance or non-performance of this Agreement.</p>
+        </div>
+
+        <div class="section">
+            <h3>3. Financial Advice Disclaimer</h3>
+            <p>The Client acknowledges that the Provider is a technology platform and does not provide certified financial planning, legal, or tax advice. All actions taken based on Provider's tools are at the Client's own discretion.</p>
+        </div>
+    </div>
+
+    <div class="signature-box">
+        <div class="sign-line">
+            <p><strong>Signed By:</strong> {{SIGNATURE}}</p>
+            <div class="timestamp">Digitally signed on {{TIMESTAMP}}</div>
+        </div>
+        <div class="sign-line">
+            <p><strong>Accepted By:</strong> First Up Financial</p>
+        </div>
+    </div>
+</body>
+</html>
