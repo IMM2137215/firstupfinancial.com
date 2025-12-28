@@ -1,0 +1,1702 @@
+
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Up Financial | Freeze Hub &amp; Financial Protection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&amp;family=Inter:wght@200;300;400;500&amp;family=JetBrains+Mono:wght@200;300;400&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- GSAP Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- GSAP Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollSmoother.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+    
+    <!-- Motion.dev -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/motion@12.23.24/+esm"></script>
+    <style>
+        body { margin: 0; overflow-x: hidden; background-color: #FDFCF8; color: #1C1917; }
+        .vellum-glass {
+            background: rgba(253, 252, 248, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(28, 25, 23, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 20px 40px -4px rgba(28, 25, 23, 0.05);
+        }
+        ::selection { background: #E7E5E4; color: #1C1917; }
+        .grid-overlay {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(28, 25, 23, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(28, 25, 23, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
+        .freeze-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px -4px rgba(28, 25, 23, 0.1); }
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Pinned Section Styles */
+        .pinned-container {
+            position: relative;
+        }
+        .pinned-box {
+            transition: all 0.3s ease;
+        }
+        
+        /* Bento Card Styles */
+        .bento-container {
+            min-height: 60vh;
+        }
+        @media (min-width: 768px) {
+            .bento-container {
+                min-height: 70vh;
+            }
+        }
+        
+        .bento-card {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            transition: transform 280ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                        opacity 280ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                        filter 280ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow: hidden;
+            will-change: transform, opacity, filter;
+        }
+        @media (min-width: 768px) {
+            .bento-card {
+                height: 320px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .bento-card {
+                height: 340px;
+            }
+        }
+        
+        .bento-card:hover:not(.expanded):not(.blurred) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(27, 115, 64, 0.08);
+        }
+        
+        .bento-card.expanded {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.05);
+            width: 85%;
+            max-width: 900px;
+            height: auto;
+            max-height: 75vh;
+            z-index: 50;
+            margin: 0;
+        }
+        @media (min-width: 768px) {
+            .bento-card.expanded {
+                width: 65%;
+                transform: translate(-50%, -50%) scale(1.08);
+            }
+        }
+        
+        .bento-card.blurred {
+            filter: blur(3px);
+            opacity: 0.65;
+            pointer-events: none;
+            transform: scale(0.9);
+        }
+        
+        .bento-overlay {
+            transition: opacity 300ms ease-in-out;
+        }
+        .bento-overlay.active {
+            opacity: 0.15;
+            pointer-events: all;
+        }
+        
+        .bento-card-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bento-card-detail {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+        @media (min-width: 768px) {
+            .bento-card-detail {
+                padding: 32px;
+            }
+        }
+        
+        /* Reduce Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            .bento-card {
+                transition: opacity 200ms ease;
+            }
+            .bento-card.expanded {
+                transform: translate(-50%, -50%);
+            }
+            .bento-card.blurred {
+                transform: none;
+                filter: none;
+            }
+        }
+        
+        /* Mobile Full Screen Modal */
+        @media (max-width: 767px) {
+            .bento-card.expanded {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                top: 0;
+                left: 0;
+                transform: none;
+                border-radius: 0;
+            }
+        }
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        
+        /* Inertia Target */
+        .inertia-interactive {
+            cursor: grab;
+            user-select: none;
+        }
+        .inertia-interactive:active {
+            cursor: grabbing;
+        }
+        
+        /* Flip Animation Target */
+        .flip-target {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body style="font-family: 'Inter', sans-serif;" class="antialiased min-h-screen">
+
+    <div class="fixed inset-0 pointer-events-none grid-overlay z-0"></div>
+
+    <!-- ScrollSmoother Wrapper -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+    <main class="relative z-10">
+        <!-- Header -->
+        <header class="flex justify-between items-center p-6 md:p-8 lg:px-12 animate-fade-in relative z-20" style="animation-delay: 0.1s;">
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=100&amp;h=100&amp;fit=crop" alt="1st Up Logo" class="w-10 h-10 object-contain hidden">
+                    <svg viewBox="0 0 100 120" class="w-10 h-12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 90 L5 30 L25 30 L25 90 L5 90" fill="url(#grad1)"></path>
+                        <path d="M15 30 L15 10 L12 15 L15 10 L18 15" stroke="white" stroke-width="2" fill="none"></path>
+                        <path d="M30 90 L30 20 L50 20 L50 90 L30 90" fill="url(#grad2)"></path>
+                        <path d="M40 20 L40 5 L37 10 L40 5 L43 10" stroke="white" stroke-width="2" fill="none"></path>
+                        <path d="M55 90 L55 10 L75 10 L75 90 L55 90" fill="#1B7340"></path>
+                        <path d="M65 10 L65 -5 L62 0 L65 -5 L68 0" stroke="white" stroke-width="2" fill="none"></path>
+                        <text x="55" y="110" font-family="Arial" font-weight="bold" font-size="14" fill="#1B7340">ST UP</text>
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4AAD7C"></stop>
+                                <stop offset="100%" style="stop-color:#2D8B5A"></stop>
+                            </linearGradient>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2D8B5A"></stop>
+                                <stop offset="100%" style="stop-color:#1B7340"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl tracking-tight font-medium text-neutral-900">First Up Financial</span>
+                </div>
+                <div class="flex items-center gap-2 pl-14">
+                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700/70">Credit Protection</span>
+                    <div class="h-px w-8 bg-emerald-700/20"></div>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                <a href="#freeze-hub" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Freeze Hub</a>
+                <a href="#protection" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Protection</a>
+                <a href="#partners" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Partners</a>
+                <a href="mobile-app.html" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Mobile App</a>
+                <button style="font-family: 'Cormorant Garamond', serif;" class="italic text-lg px-6 py-2 border border-neutral-200 hover:border-emerald-700 hover:bg-emerald-700 hover:text-white transition-all rounded-full">
+                    Get Started
+                </button>
+            </nav>
+
+            <button class="md:hidden p-2">
+                <span class="iconify text-neutral-700" data-icon="lucide:menu" data-width="24" style="stroke-width: 1.5;"></span>
+            </button>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section px-6 md:px-8 lg:px-12 pt-12 md:pt-20 pb-24 md:pb-32">
+            <canvas id="hero-canvas"></canvas>
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
+                <div class="animate-fade-in" style="animation-delay: 0.3s;">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="h-px w-12 bg-emerald-700"></div>
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Financial Data Sovereignty</span>
+                    </div>
+                    
+                    <h1 style="font-family: 'Cormorant Garamond', serif;" class="text-5xl md:text-6xl lg:text-7xl text-neutral-900 leading-tight tracking-tighter">
+                        Take Control of<br>
+                        <span class="italic font-light text-neutral-500">Your Credit Data</span>
+                    </h1>
+                    
+                    <p class="mt-8 max-w-lg text-base md:text-lg text-neutral-600 font-light leading-relaxed">
+                        Beyond the Big 3. Freeze your secondary credit files at ChexSystems, Innovis, NCTUE, and LexisNexis. Connect with vetted financial partners through our liability-protected platform.
+                    </p>
+
+                    <div class="mt-10 flex flex-wrap items-center gap-4">
+                        <button class="group flex items-center gap-3 bg-emerald-700 text-white px-8 py-4 rounded-lg hover:bg-emerald-800 transition-all duration-300">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs tracking-widest uppercase">Access Freeze Hub</span>
+                            <span class="iconify w-4 h-4 group-hover:translate-x-1 transition-transform" data-icon="lucide:arrow-right" style="stroke-width: 1.5;"></span>
+                        </button>
+                        <div class="h-px w-8 bg-neutral-300 hidden sm:block"></div>
+                        <span style="font-family: 'Cormorant Garamond', serif;" class="italic text-neutral-400">$9.99/month</span>
+                    </div>
+
+                    <div class="mt-12 flex items-center gap-6">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-xs font-medium text-emerald-700">JD</div>
+                            <div class="w-8 h-8 rounded-full bg-emerald-200 border-2 border-white flex items-center justify-center text-xs font-medium text-emerald-700">MK</div>
+                            <div class="w-8 h-8 rounded-full bg-emerald-300 border-2 border-white flex items-center justify-center text-xs font-medium text-white">TS</div>
+                        </div>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500">2,400+ users protected</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 gap-4 animate-fade-in" style="animation-delay: 0.5s;">
+                    <div class="vellum-glass rounded-xl p-6 col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-neutral-400">Active Freezes Today</span>
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        </div>
+                        <p style="font-family: 'Cormorant Garamond', serif;" class="text-5xl font-medium text-neutral-900">847</p>
+                    </div>
+                    <div class="vellum-glass rounded-xl p-5">
+                        <span class="iconify text-emerald-700 mb-3" data-icon="lucide:shield" data-width="24" style="stroke-width: 1.5;"></span>
+                        <p style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium text-neutral-900">4</p>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 mt-1">Agencies Covered</p>
+                    </div>
+                    <div class="vellum-glass rounded-xl p-5">
+                        <span class="iconify text-emerald-700 mb-3" data-icon="lucide:building-2" data-width="24" style="stroke-width: 1.5;"></span>
+                        <p style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium text-neutral-900">12</p>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 mt-1">Vetted Partners</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Target Audience -->
+        <section class="px-6 md:px-8 lg:px-12 py-20 bg-neutral-900 text-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-400">Who We Serve</span>
+                    <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight mt-4 font-medium">Built for Those Who Need It Most</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="p-8 rounded-xl border border-neutral-800 hover:border-emerald-700/50 transition-colors">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-900/30 flex items-center justify-center mb-6">
+                            <span class="iconify text-emerald-400" data-icon="lucide:ban" data-width="24" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium mb-3">The Blacklisted</h3>
+                        <p class="text-neutral-400 font-light leading-relaxed text-sm">Recently denied a checking account due to ChexSystems? We help you freeze and protect your banking data.</p>
+                    </div>
+
+                    <div class="p-8 rounded-xl border border-neutral-800 hover:border-emerald-700/50 transition-colors">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-900/30 flex items-center justify-center mb-6">
+                            <span class="iconify text-emerald-400" data-icon="lucide:user-x" data-width="24" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium mb-3">Identity Theft Survivor</h3>
+                        <p class="text-neutral-400 font-light leading-relaxed text-sm">Need to lock down utility and telecom data at NCTUE? Prevent fraudulent accounts from being opened in your name.</p>
+                    </div>
+
+                    <div class="p-8 rounded-xl border border-neutral-800 hover:border-emerald-700/50 transition-colors">
+                        <div class="w-12 h-12 rounded-lg bg-emerald-900/30 flex items-center justify-center mb-6">
+                            <span class="iconify text-emerald-400" data-icon="lucide:lock" data-width="24" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium mb-3">The Privacy Pro</h3>
+                        <p class="text-neutral-400 font-light leading-relaxed text-sm">Seeking complete data sovereignty beyond Equifax/TransUnion? Take control of every credit file that exists about you.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Freeze Hub Section -->
+        <section id="freeze-hub" class="px-6 md:px-8 lg:px-12 py-20 md:py-28">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-px w-12 bg-emerald-700"></div>
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Core Feature</span>
+                        </div>
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight font-medium text-neutral-900">The Freeze Hub</h2>
+                        <p class="mt-4 text-neutral-600 font-light max-w-xl">One dashboard to freeze your credit at all secondary reporting agencies. Direct links, clear guidance, complete protection.</p>
+                    </div>
+                    <div class="mt-6 md:mt-0 flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700">All Links Verified</span>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- ChexSystems -->
+                    <div class="vellum-glass rounded-xl p-6 md:p-8 freeze-card transition-all duration-300 cursor-pointer">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:landmark" data-width="28" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <span class="iconify text-emerald-500" data-icon="lucide:check-circle-2" data-width="20" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium text-neutral-900 mb-2">ChexSystems</h3>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Banking &amp; Checking Accounts</p>
+                        <p class="text-neutral-600 font-light text-sm leading-relaxed mb-6">Freeze ChexSystems to stop bank account fraud and prevent unauthorized checking account applications.</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-neutral-200/60">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">Freeze Now</span>
+                            <span class="iconify text-neutral-400" data-icon="lucide:external-link" data-width="16" style="stroke-width: 1.5;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Innovis -->
+                    <div class="vellum-glass rounded-xl p-6 md:p-8 freeze-card transition-all duration-300 cursor-pointer">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:file-text" data-width="28" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <span class="iconify text-emerald-500" data-icon="lucide:check-circle-2" data-width="20" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium text-neutral-900 mb-2">Innovis</h3>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Secondary Credit Bureau</p>
+                        <p class="text-neutral-600 font-light text-sm leading-relaxed mb-6">The fourth credit bureau. Many lenders check Innovis for additional credit history verification.</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-neutral-200/60">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">Freeze Now</span>
+                            <span class="iconify text-neutral-400" data-icon="lucide:external-link" data-width="16" style="stroke-width: 1.5;"></span>
+                        </div>
+                    </div>
+
+                    <!-- NCTUE -->
+                    <div class="vellum-glass rounded-xl p-6 md:p-8 freeze-card transition-all duration-300 cursor-pointer">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:plug-zap" data-width="28" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <span class="iconify text-emerald-500" data-icon="lucide:check-circle-2" data-width="20" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium text-neutral-900 mb-2">NCTUE</h3>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Utilities &amp; Telecom</p>
+                        <p class="text-neutral-600 font-light text-sm leading-relaxed mb-6">Protect your utility and telecom data. Stop fraudsters from opening electric, gas, or phone accounts in your name.</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-neutral-200/60">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">Freeze Now</span>
+                            <span class="iconify text-neutral-400" data-icon="lucide:external-link" data-width="16" style="stroke-width: 1.5;"></span>
+                        </div>
+                    </div>
+
+                    <!-- LexisNexis -->
+                    <div class="vellum-glass rounded-xl p-6 md:p-8 freeze-card transition-all duration-300 cursor-pointer">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:database" data-width="28" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <span class="iconify text-emerald-500" data-icon="lucide:check-circle-2" data-width="20" style="stroke-width: 1.5;"></span>
+                        </div>
+                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl tracking-tight font-medium text-neutral-900 mb-2">LexisNexis</h3>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Insurance &amp; Public Records</p>
+                        <p class="text-neutral-600 font-light text-sm leading-relaxed mb-6">Controls insurance quotes and background checks. Freeze to prevent identity theft affecting your insurance rates.</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-neutral-200/60">
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">Freeze Now</span>
+                            <span class="iconify text-neutral-400" data-icon="lucide:external-link" data-width="16" style="stroke-width: 1.5;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hold Harmless Section -->
+        <section id="protection" class="px-6 md:px-8 lg:px-12 py-20 bg-gradient-to-b from-neutral-50 to-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-px w-12 bg-emerald-700"></div>
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Legal Protection</span>
+                        </div>
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight font-medium text-neutral-900">Hold Harmless Engine</h2>
+                        <p class="mt-6 text-neutral-600 font-light leading-relaxed">When you connect with our vetted financial partners, our automated system generates legally-binding Hold Harmless agreements to protect all parties involved.</p>
+                        
+                        <div class="mt-10 space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="iconify text-emerald-600" data-icon="lucide:file-signature" data-width="16" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-neutral-900 mb-1">Automated PDF Generation</h4>
+                                    <p class="text-sm text-neutral-600 font-light">Agreements generated instantly with your consent timestamp recorded.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="iconify text-emerald-600" data-icon="lucide:mail" data-width="16" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-neutral-900 mb-1">Email Delivery &amp; Storage</h4>
+                                    <p class="text-sm text-neutral-600 font-light">PDF agreements emailed to you and securely stored in your dashboard.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="iconify text-emerald-600" data-icon="lucide:scale" data-width="16" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-neutral-900 mb-1">Indemnification Clause</h4>
+                                    <p class="text-sm text-neutral-600 font-light">Full limitation of liability protection for partner connections.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vellum-glass rounded-2xl p-8 md:p-10">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="iconify text-emerald-700" data-icon="lucide:file-check" data-width="24" style="stroke-width: 1.5;"></span>
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-neutral-500">Sample Agreement Preview</span>
+                        </div>
+                        <div class="bg-white rounded-lg border border-neutral-200 p-6 space-y-4">
+                            <div class="h-3 w-3/4 bg-neutral-100 rounded"></div>
+                            <div class="h-3 w-full bg-neutral-100 rounded"></div>
+                            <div class="h-3 w-5/6 bg-neutral-100 rounded"></div>
+                            <div class="h-3 w-full bg-neutral-100 rounded"></div>
+                            <div class="h-3 w-2/3 bg-neutral-100 rounded"></div>
+                            <div class="pt-4 border-t border-neutral-100">
+                                <div class="h-3 w-1/2 bg-emerald-100 rounded"></div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500">Digitally Signed</span>
+                            </div>
+                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">PDF • 2 pages</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pinned Interactive Section -->
+        <section class="px-6 md:px-8 lg:px-12 py-20">
+            <div class="max-w-7xl mx-auto">
+                <div class="pinned-container vellum-glass rounded-2xl p-12 text-center">
+                    <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl font-medium text-neutral-900 mb-8">Why Choose First Up</h2>
+                    <div class="pinned-box-container grid md:grid-cols-3 gap-8 mt-12">
+                        <div class="pinned-box vellum-glass rounded-xl p-8">
+                            <span class="iconify text-emerald-700 mb-4" data-icon="lucide:shield-check" data-width="40" style="stroke-width: 1.5;"></span>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">Complete Protection</h3>
+                            <p class="text-neutral-600 font-light">Beyond the Big 3, we cover all secondary credit agencies.</p>
+                        </div>
+                        <div class="pinned-box vellum-glass rounded-xl p-8">
+                            <span class="iconify text-emerald-700 mb-4" data-icon="lucide:lock" data-width="40" style="stroke-width: 1.5;"></span>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">Bank-Level Security</h3>
+                            <p class="text-neutral-600 font-light">Your data is encrypted and protected with enterprise-grade security.</p>
+                        </div>
+                        <div class="pinned-box vellum-glass rounded-xl p-8">
+                            <span class="iconify text-emerald-700 mb-4" data-icon="lucide:users" data-width="40" style="stroke-width: 1.5;"></span>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">Vetted Partners</h3>
+                            <p class="text-neutral-600 font-light">Connect with trusted financial institutions safely and securely.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bento Feature Showcase Section -->
+        <section class="px-6 md:px-8 lg:px-12 py-12 md:py-16 bg-gradient-to-b from-white via-neutral-50 to-white" style="min-height: 90vh; display: flex; flex-direction: column;">
+            <div class="max-w-[1320px] mx-auto w-full flex-1 flex flex-col">
+                <div class="text-center mb-12 md:mb-16">
+                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Our Platform</span>
+                    <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight font-medium text-neutral-900 mb-4">Experience the Difference</h2>
+                    <p class="text-neutral-600 font-light max-w-2xl mx-auto text-sm md:text-base">Tap any card to explore deeper insights.</p>
+                </div>
+
+                <!-- Bento Grid Container -->
+                <div class="bento-container relative flex-1" id="bento-container">
+                    <!-- Background Overlay (appears on expand) -->
+                    <div class="bento-overlay fixed inset-0 bg-black opacity-0 pointer-events-none z-40 transition-opacity duration-300" id="bento-overlay"></div>
+                    
+                    <div class="bento-grid grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 relative z-10" id="bento-grid">
+                        <!-- Card 1: Complete Protection -->
+                        <div class="bento-card vellum-glass rounded-[18px] md:rounded-[24px] p-6 md:p-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2" 
+                             tabindex="0" 
+                             role="button" 
+                             aria-label="Complete Protection - Tap to explore"
+                             data-card="1">
+                            <div class="bento-card-content h-full flex flex-col">
+                                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:shield" data-width="24" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl font-medium mb-2 text-neutral-900">Complete Protection</h3>
+                                <p class="text-sm text-neutral-600 font-light mb-auto">Beyond the Big 3 credit bureaus</p>
+                                <div class="mt-4 pt-4 border-t border-neutral-200 flex items-center gap-2">
+                                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Tap to explore</span>
+                                    <span class="iconify text-emerald-700" data-icon="lucide:chevron-right" data-width="14" style="stroke-width: 1.5;"></span>
+                                </div>
+                            </div>
+                            <div class="bento-card-detail hidden h-full flex flex-col">
+                                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 z-50" 
+                                        onclick="closeBentoCard(event)"
+                                        aria-label="Close expanded card"
+                                        tabindex="0">
+                                    <span class="iconify text-neutral-600" data-icon="lucide:x" data-width="20" style="stroke-width: 1.5;"></span>
+                                </button>
+                                <div class="w-16 h-16 rounded-xl bg-emerald-100 flex items-center justify-center mb-6">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:shield" data-width="32" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl md:text-3xl font-medium mb-6 text-neutral-900">Complete Protection</h3>
+                                <div class="space-y-6 flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Fact</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Most people only freeze Equifax, Experian, and TransUnion. But there are 4+ additional agencies that lenders check, including ChexSystems, Innovis, NCTUE, and LexisNexis.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Benefit</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Complete protection means no gaps in your credit security. Fraudsters can't open accounts through secondary agencies if those files are frozen.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Application</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Use our Freeze Hub to manage all your credit freezes from one dashboard. Get direct links, step-by-step guidance, and status tracking for every agency.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Automated Agreements -->
+                        <div class="bento-card vellum-glass rounded-[18px] md:rounded-[24px] p-6 md:p-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2" 
+                             tabindex="0" 
+                             role="button" 
+                             aria-label="Automated Agreements - Tap to explore"
+                             data-card="2">
+                            <div class="bento-card-content h-full flex flex-col">
+                                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:file-check" data-width="24" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl font-medium mb-2 text-neutral-900">Automated Agreements</h3>
+                                <p class="text-sm text-neutral-600 font-light mb-auto">Legal protection built-in</p>
+                                <div class="mt-4 pt-4 border-t border-neutral-200 flex items-center gap-2">
+                                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Tap to explore</span>
+                                    <span class="iconify text-emerald-700" data-icon="lucide:chevron-right" data-width="14" style="stroke-width: 1.5;"></span>
+                                </div>
+                            </div>
+                            <div class="bento-card-detail hidden h-full flex flex-col">
+                                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 z-50" 
+                                        onclick="closeBentoCard(event)"
+                                        aria-label="Close expanded card"
+                                        tabindex="0">
+                                    <span class="iconify text-neutral-600" data-icon="lucide:x" data-width="20" style="stroke-width: 1.5;"></span>
+                                </button>
+                                <div class="w-16 h-16 rounded-xl bg-emerald-100 flex items-center justify-center mb-6">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:file-check" data-width="32" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl md:text-3xl font-medium mb-6 text-neutral-900">Automated Agreements</h3>
+                                <div class="space-y-6 flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Fact</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">When connecting with financial partners, liability protection is critical. Traditional platforms don't provide this layer of legal security.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Benefit</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Our Hold Harmless Engine automatically generates legally-binding agreements that protect all parties. You get instant PDFs with digital signatures and timestamps.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Application</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Every partner connection triggers an automated agreement. Documents are emailed to you and stored securely in your dashboard for future reference.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Vetted Partners -->
+                        <div class="bento-card vellum-glass rounded-[18px] md:rounded-[24px] p-6 md:p-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2" 
+                             tabindex="0" 
+                             role="button" 
+                             aria-label="Vetted Partners - Tap to explore"
+                             data-card="3">
+                            <div class="bento-card-content h-full flex flex-col">
+                                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:handshake" data-width="24" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl font-medium mb-2 text-neutral-900">Vetted Partners</h3>
+                                <p class="text-sm text-neutral-600 font-light mb-auto">Trusted financial connections</p>
+                                <div class="mt-4 pt-4 border-t border-neutral-200 flex items-center gap-2">
+                                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Tap to explore</span>
+                                    <span class="iconify text-emerald-700" data-icon="lucide:chevron-right" data-width="14" style="stroke-width: 1.5;"></span>
+                                </div>
+                            </div>
+                            <div class="bento-card-detail hidden h-full flex flex-col">
+                                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 z-50" 
+                                        onclick="closeBentoCard(event)"
+                                        aria-label="Close expanded card"
+                                        tabindex="0">
+                                    <span class="iconify text-neutral-600" data-icon="lucide:x" data-width="20" style="stroke-width: 1.5;"></span>
+                                </button>
+                                <div class="w-16 h-16 rounded-xl bg-emerald-100 flex items-center justify-center mb-6">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:handshake" data-width="32" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl md:text-3xl font-medium mb-6 text-neutral-900">Vetted Partners</h3>
+                                <div class="space-y-6 flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Fact</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Finding second-chance banking options can be risky. Many platforms don't verify partner legitimacy or provide liability protection.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Benefit</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">All partners undergo KYB (Know Your Business) verification. We only connect you with legitimate institutions that specialize in helping people rebuild their financial foundation.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Application</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Browse our partner directory, read verified reviews, and connect directly. Each connection is protected by our Hold Harmless agreements, giving you peace of mind.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Mobile Ready -->
+                        <div class="bento-card vellum-glass rounded-[18px] md:rounded-[24px] p-6 md:p-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2" 
+                             tabindex="0" 
+                             role="button" 
+                             aria-label="Mobile Ready - Tap to explore"
+                             data-card="4">
+                            <div class="bento-card-content h-full flex flex-col">
+                                <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:smartphone" data-width="24" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl font-medium mb-2 text-neutral-900">Mobile Ready</h3>
+                                <p class="text-sm text-neutral-600 font-light mb-auto">Protection on the go</p>
+                                <div class="mt-4 pt-4 border-t border-neutral-200 flex items-center gap-2">
+                                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Tap to explore</span>
+                                    <span class="iconify text-emerald-700" data-icon="lucide:chevron-right" data-width="14" style="stroke-width: 1.5;"></span>
+                                </div>
+                            </div>
+                            <div class="bento-card-detail hidden h-full flex flex-col">
+                                <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 z-50" 
+                                        onclick="closeBentoCard(event)"
+                                        aria-label="Close expanded card"
+                                        tabindex="0">
+                                    <span class="iconify text-neutral-600" data-icon="lucide:x" data-width="20" style="stroke-width: 1.5;"></span>
+                                </button>
+                                <div class="w-16 h-16 rounded-xl bg-emerald-100 flex items-center justify-center mb-6">
+                                    <span class="iconify text-emerald-700" data-icon="lucide:smartphone" data-width="32" style="stroke-width: 1.5;"></span>
+                                </div>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl md:text-3xl font-medium mb-6 text-neutral-900">Mobile Ready</h3>
+                                <div class="space-y-6 flex-1 overflow-y-auto pr-2" style="scrollbar-width: thin;">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Fact</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Credit protection shouldn't be limited to desktop. You need access to manage freezes, view agreements, and connect with partners from anywhere.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Benefit</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Native iOS and Android apps provide the same powerful features as the web platform, with biometric authentication, push notifications, and offline access to your documents.</p>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 font-medium">Application</span>
+                                            <div class="h-px flex-1 bg-emerald-200"></div>
+                                        </div>
+                                        <p class="text-neutral-700 font-light leading-relaxed">Download from the App Store or Google Play. All your data syncs seamlessly across devices, so you can manage your credit protection whether you're at home or on the go.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animated Stats -->
+                <div class="grid md:grid-cols-3 gap-8 mt-16">
+                    <div class="text-center">
+                        <div class="stat-number text-5xl md:text-6xl font-medium text-emerald-700 mb-2" data-target="2400">0</div>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-neutral-500">Active Users</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stat-number text-5xl md:text-6xl font-medium text-emerald-700 mb-2" data-target="847">0</div>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-neutral-500">Active Freezes</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stat-number text-5xl md:text-6xl font-medium text-emerald-700 mb-2" data-target="99">0</div>
+                        <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-neutral-500">% Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partner Section -->
+        <section id="partners" class="px-6 md:px-8 lg:px-12 py-20 md:py-28">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700">Vetted Partners</span>
+                    <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight mt-4 font-medium text-neutral-900">Second Chance Banking</h2>
+                    <p class="mt-4 text-neutral-600 font-light max-w-2xl mx-auto">Connect with KYB-verified financial partners who specialize in helping those rebuilding their financial foundation.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="vellum-glass rounded-xl p-6 freeze-card transition-all duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-emerald-600">SC</span>
+                            </div>
+                            <div class="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50">
+                                <span class="iconify text-emerald-600" data-icon="lucide:badge-check" data-width="14" style="stroke-width: 1.5;"></span>
+                                <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700">KYB Verified</span>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-neutral-900 mb-1">SecureCheck Bank</h3>
+                        <p class="text-sm text-neutral-500 mb-4">Second chance checking accounts with no ChexSystems check required.</p>
+                        <div class="flex items-center gap-4 text-xs text-neutral-400" style="font-family: 'JetBrains Mono', monospace;">
+                            <span>No min. balance</span>
+                            <span>•</span>
+                            <span>Debit card included</span>
+                        </div>
+                    </div>
+
+                    <div class="vellum-glass rounded-xl p-6 freeze-card transition-all duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-emerald-600">FF</span>
+                            </div>
+                            <div class="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50">
+                                <span class="iconify text-emerald-600" data-icon="lucide:badge-check" data-width="14" style="stroke-width: 1.5;"></span>
+                                <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700">KYB Verified</span>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-neutral-900 mb-1">FreshStart Financial</h3>
+                        <p class="text-sm text-neutral-500 mb-4">Prepaid accounts that help rebuild your banking history over time.</p>
+                        <div class="flex items-center gap-4 text-xs text-neutral-400" style="font-family: 'JetBrains Mono', monospace;">
+                            <span>Free ACH transfers</span>
+                            <span>•</span>
+                            <span>Mobile app</span>
+                        </div>
+                    </div>
+
+                    <div class="vellum-glass rounded-xl p-6 freeze-card transition-all duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <span style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-emerald-600">RB</span>
+                            </div>
+                            <div class="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50">
+                                <span class="iconify text-emerald-600" data-icon="lucide:badge-check" data-width="14" style="stroke-width: 1.5;"></span>
+                                <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700">KYB Verified</span>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-neutral-900 mb-1">Rebuild Banking</h3>
+                        <p class="text-sm text-neutral-500 mb-4">Full-service banking with credit-building features and financial coaching.</p>
+                        <div class="flex items-center gap-4 text-xs text-neutral-400" style="font-family: 'JetBrains Mono', monospace;">
+                            <span>Credit monitoring</span>
+                            <span>•</span>
+                            <span>Savings tools</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="px-6 md:px-8 lg:px-12 py-20 bg-neutral-900 text-white">
+            <div class="max-w-4xl mx-auto text-center">
+                <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-400">Subscription</span>
+                <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight mt-4 font-medium">Simple, Transparent Pricing</h2>
+                <p class="mt-4 text-neutral-400 font-light">Full access to the Freeze Hub, Hold Harmless Engine, and vetted partner network.</p>
+
+                <div class="mt-12 vellum-glass rounded-2xl p-8 md:p-12 text-neutral-900 max-w-md mx-auto">
+                    <div class="flex items-baseline justify-center gap-2">
+                        <span style="font-family: 'Cormorant Garamond', serif;" class="text-6xl font-medium">$9.99</span>
+                        <span class="text-neutral-500">/month</span>
+                    </div>
+                    <p class="mt-4 text-neutral-600 font-light">Cancel anytime. No hidden fees.</p>
+                    
+                    <div class="mt-8 space-y-3 text-left">
+                        <div class="flex items-center gap-3">
+                            <span class="iconify text-emerald-600" data-icon="lucide:check" data-width="18" style="stroke-width: 1.5;"></span>
+                            <span class="text-sm text-neutral-700">Complete Freeze Hub access</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="iconify text-emerald-600" data-icon="lucide:check" data-width="18" style="stroke-width: 1.5;"></span>
+                            <span class="text-sm text-neutral-700">Hold Harmless agreement generation</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="iconify text-emerald-600" data-icon="lucide:check" data-width="18" style="stroke-width: 1.5;"></span>
+                            <span class="text-sm text-neutral-700">Vetted partner connections</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="iconify text-emerald-600" data-icon="lucide:check" data-width="18" style="stroke-width: 1.5;"></span>
+                            <span class="text-sm text-neutral-700">Document storage dashboard</span>
+                        </div>
+                    </div>
+
+                    <button class="mt-10 w-full bg-emerald-700 text-white py-4 rounded-lg hover:bg-emerald-800 transition-colors font-medium">
+                        Start Your Protection
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="px-6 md:px-8 lg:px-12 py-12 border-t border-neutral-200">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <svg viewBox="0 0 100 120" class="w-8 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 90 L5 30 L25 30 L25 90 L5 90" fill="url(#grad1f)"></path>
+                        <path d="M15 30 L15 10 L12 15 L15 10 L18 15" stroke="white" stroke-width="2" fill="none"></path>
+                        <path d="M30 90 L30 20 L50 20 L50 90 L30 90" fill="url(#grad2f)"></path>
+                        <path d="M40 20 L40 5 L37 10 L40 5 L43 10" stroke="white" stroke-width="2" fill="none"></path>
+                        <path d="M55 90 L55 10 L75 10 L75 90 L55 90" fill="#1B7340"></path>
+                        <path d="M65 10 L65 -5 L62 0 L65 -5 L68 0" stroke="white" stroke-width="2" fill="none"></path>
+                        <defs>
+                            <linearGradient id="grad1f" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4AAD7C"></stop>
+                                <stop offset="100%" style="stop-color:#2D8B5A"></stop>
+                            </linearGradient>
+                            <linearGradient id="grad2f" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2D8B5A"></stop>
+                                <stop offset="100%" style="stop-color:#1B7340"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span style="font-family: 'Cormorant Garamond', serif;" class="text-lg tracking-tight font-medium text-neutral-900">First Up Financial</span>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <a href="#" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors">Privacy</a>
+                    <a href="#" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors">Terms</a>
+                    <a href="#" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors">Contact</a>
+                </div>
+
+                <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">© 2024 First Up Financial. All rights reserved.</p>
+            </div>
+        </footer>
+    </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { animate, scroll, motionValue, transformValue, styleEffect } from "https://cdn.jsdelivr.net/npm/motion@12.23.24/+esm";
+        
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Flip);
+
+        // Initialize ScrollSmoother
+        let smoother = ScrollSmoother.create({
+            wrapper: "#smooth-wrapper",
+            content: "#smooth-content",
+            smooth: 1.2,
+            effects: true,
+            smoothTouch: 0.1
+        });
+
+        // Add subtle parallax effects to cards with enhanced settings
+        smoother.effects(".freeze-card", { speed: 0.5, lag: 0.1 });
+        smoother.effects(".vellum-glass", { speed: 0.3, lag: 0.05 });
+        smoother.effects(".pinned-box", { speed: 0.4, lag: 0.08 });
+        smoother.effects("h2, h3", { speed: 0.2, lag: 0.05 });
+
+        // Hero text animations with ScrollTrigger
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            }
+        })
+        .to(".hero-section h1", { y: -50, opacity: 0.3, scale: 0.95 })
+        .to(".hero-section p", { y: -30, opacity: 0.2 }, "<");
+
+        // Section fade-in animations
+        gsap.utils.toArray("section").forEach((section, i) => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    end: "top 50%",
+                    toggleActions: "play none none reverse"
+                },
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                ease: "power2.out",
+                delay: i * 0.1
+            });
+        });
+
+        // Text reveal animations
+        gsap.utils.toArray("h2, h3").forEach((heading) => {
+            gsap.from(heading, {
+                scrollTrigger: {
+                    trigger: heading,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                },
+                opacity: 0,
+                y: 20,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+
+        // Card stagger animations
+        gsap.utils.toArray(".freeze-card").forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                },
+                opacity: 0,
+                y: 40,
+                scale: 0.95,
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: "back.out(1.2)"
+            });
+        });
+
+        // Stats counter animation
+        const statsNumber = document.querySelector(".text-5xl.font-medium");
+        if (statsNumber) {
+            ScrollTrigger.create({
+                trigger: statsNumber,
+                start: "top 80%",
+                onEnter: () => {
+                    gsap.to({ value: 0 }, {
+                        value: 847,
+                        duration: 2,
+                        ease: "power2.out",
+                        onUpdate: function() {
+                            statsNumber.textContent = Math.floor(this.targets()[0].value);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Motion.dev blur effect is handled in Style Effects section below
+
+        // Motion.dev - 3D tilt effect on hero
+        const heroTilt = motionValue({ x: 0, y: 0 });
+        document.addEventListener("mousemove", (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 10;
+            const y = (e.clientY / window.innerHeight - 0.5) * 10;
+            animate(heroTilt, { x, y }, { duration: 0.5 });
+        });
+
+        heroTilt.subscribe(({ x, y }) => {
+            const heroContent = document.querySelector(".hero-section > div");
+            if (heroContent) {
+                heroContent.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg)`;
+            }
+        });
+
+        // Button hover animations with Motion.dev
+        document.querySelectorAll("button").forEach(btn => {
+            btn.addEventListener("mouseenter", () => {
+                animate(btn, { scale: 1.05 }, { duration: 0.2 });
+            });
+            btn.addEventListener("mouseleave", () => {
+                animate(btn, { scale: 1 }, { duration: 0.2 });
+            });
+        });
+
+        // Pinned Section with Timeline and Snap
+        const pinnedContainer = document.querySelector(".pinned-container");
+        if (pinnedContainer) {
+            let pinnedTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: pinnedContainer,
+                    pin: true,
+                    start: "top top",
+                    end: "+=800",
+                    scrub: 1,
+                    snap: {
+                        snapTo: "labels",
+                        duration: { min: 0.2, max: 3 },
+                        delay: 0.2,
+                        ease: "power1.inOut"
+                    }
+                }
+            });
+
+            pinnedTL.addLabel("start")
+                .from(".pinned-box p", { scale: 0.5, autoAlpha: 0, y: 20 }, "start")
+                .addLabel("reveal")
+                .to(".pinned-box p", { scale: 1, autoAlpha: 1, y: 0, duration: 0.6 }, "reveal")
+                .addLabel("color")
+                .to(".pinned-box", { backgroundColor: "#E8F5E9", duration: 0.4 }, "color")
+                .addLabel("scale")
+                .to(".pinned-box", { scale: 1.03, duration: 0.4 }, "scale")
+                .addLabel("reset")
+                .to(".pinned-box", { scale: 1, backgroundColor: "rgba(253, 252, 248, 0.9)", duration: 0.4 }, "reset")
+                .addLabel("end");
+        }
+
+        // Bento Card Interaction System
+        const bentoContainer = document.getElementById("bento-container");
+        const bentoGrid = document.getElementById("bento-grid");
+        const bentoOverlay = document.getElementById("bento-overlay");
+        const bentoCards = document.querySelectorAll(".bento-card");
+        let activeCard = null;
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const animationDuration = prefersReducedMotion ? 200 : 280;
+
+        // Initialize cards - animate in on scroll
+        bentoCards.forEach((card, index) => {
+            if (!prefersReducedMotion) {
+                gsap.set(card, { opacity: 0, y: 20 });
+                
+                gsap.to(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    delay: index * 0.08,
+                    ease: "power2.out"
+                });
+            }
+
+            // Click/Tap to expand
+            card.addEventListener("click", function(e) {
+                if (card.classList.contains("expanded")) return;
+                expandBentoCard(card);
+            });
+
+            // Keyboard navigation
+            card.addEventListener("keydown", function(e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    if (!card.classList.contains("expanded")) {
+                        expandBentoCard(card);
+                    }
+                }
+            });
+        });
+
+        function expandBentoCard(card) {
+            if (activeCard === card) return;
+            
+            // Lock body scroll on mobile
+            if (window.innerWidth < 768) {
+                document.body.style.overflow = "hidden";
+            }
+            
+            const allCards = Array.from(bentoCards);
+            const cardContent = card.querySelector(".bento-card-content");
+            const cardDetail = card.querySelector(".bento-card-detail");
+            const closeButton = cardDetail.querySelector("button");
+            const otherCards = allCards.filter(c => c !== card);
+            
+            // Store original position and dimensions for restoration
+            const cardRect = card.getBoundingClientRect();
+            card.dataset.originalRect = JSON.stringify({
+                left: cardRect.left,
+                top: cardRect.top,
+                width: cardRect.width,
+                height: cardRect.height
+            });
+            
+            // Get initial positions and dimensions
+            const viewportCenterX = window.innerWidth / 2;
+            const viewportCenterY = window.innerHeight / 2;
+            const cardCenterX = cardRect.left + cardRect.width / 2;
+            const cardCenterY = cardRect.top + cardRect.height / 2;
+            
+            // Calculate transform needed to center
+            const translateX = viewportCenterX - cardCenterX;
+            const translateY = viewportCenterY - cardCenterY;
+            
+            // Mark as active
+            activeCard = card;
+            card.classList.add("expanded");
+            cardContent.classList.add("hidden");
+            cardDetail.classList.remove("hidden");
+            
+            // Create master timeline
+            const masterTL = gsap.timeline({
+                defaults: { ease: prefersReducedMotion ? "none" : "power2.inOut" }
+            });
+            
+            // Step 1: Fade in overlay and start shrinking/blurring other cards
+            masterTL
+                .to(bentoOverlay, {
+                    opacity: 0.15,
+                    duration: animationDuration / 1000,
+                    ease: "power1.out"
+                }, 0)
+                .to(otherCards, {
+                    scale: 0.9,
+                    opacity: 0.65,
+                    filter: "blur(3px)",
+                    duration: animationDuration / 1000,
+                    stagger: 0.02,
+                    ease: "power2.inOut"
+                }, 0);
+            
+            // Step 2: Animate selected card to center with scale
+            if (!prefersReducedMotion) {
+                // Mobile: full screen
+                if (window.innerWidth < 768) {
+                    masterTL.to(card, {
+                        x: -cardRect.left,
+                        y: -cardRect.top,
+                        width: "100vw",
+                        height: "100vh",
+                        scale: 1,
+                        borderRadius: 0,
+                        duration: animationDuration / 1000,
+                        ease: "power2.inOut"
+                    }, 0);
+                } else {
+                    // Desktop: center and scale
+                    masterTL
+                        .to(card, {
+                            x: translateX,
+                            y: translateY,
+                            scale: 1.08,
+                            duration: animationDuration / 1000,
+                            ease: "power2.inOut",
+                            transformOrigin: "center center"
+                        }, 0)
+                        .to(card, {
+                            width: "65%",
+                            maxWidth: "900px",
+                            height: "auto",
+                            maxHeight: "75vh",
+                            duration: animationDuration / 1000,
+                            ease: "power2.inOut"
+                        }, animationDuration / 2000);
+                }
+            } else {
+                // Reduced motion: just fade and simple position
+                masterTL.to(card, {
+                    opacity: 1,
+                    duration: 200 / 1000
+                }, 0);
+            }
+            
+            // Step 3: Fade in detail content
+            masterTL.from(cardDetail, {
+                opacity: 0,
+                y: 20,
+                duration: 0.3,
+                ease: "power2.out"
+            }, animationDuration / 1500);
+            
+            // On complete
+            masterTL.call(() => {
+                // Set fixed positioning for desktop
+                if (!prefersReducedMotion && window.innerWidth >= 768) {
+                    gsap.set(card, {
+                        position: "fixed",
+                        top: "50%",
+                        left: "50%",
+                        x: "-50%",
+                        y: "-50%",
+                        clearProps: "transform"
+                    });
+                } else if (window.innerWidth < 768) {
+                    gsap.set(card, {
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        x: 0,
+                        y: 0,
+                        clearProps: "transform"
+                    });
+                }
+                closeButton.focus();
+                card.setAttribute("aria-expanded", "true");
+            });
+        }
+
+        // Close function
+        window.closeBentoCard = function(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            if (!activeCard) return;
+            
+            // Unlock body scroll
+            document.body.style.overflow = "";
+            
+            const card = activeCard;
+            const allCards = Array.from(bentoCards);
+            const cardContent = card.querySelector(".bento-card-content");
+            const cardDetail = card.querySelector(".bento-card-detail");
+            const otherCards = allCards.filter(c => c !== card);
+            
+            // Get original position from stored data
+            const originalRect = card.dataset.originalRect ? JSON.parse(card.dataset.originalRect) : null;
+            
+            // Create close timeline
+            const closeTL = gsap.timeline({
+                defaults: { ease: prefersReducedMotion ? "none" : "power2.inOut" },
+                onComplete: () => {
+                    // Reset classes and styles
+                    card.classList.remove("expanded");
+                    cardContent.classList.remove("hidden");
+                    cardDetail.classList.add("hidden");
+                    card.setAttribute("aria-expanded", "false");
+                    
+                    // Clear inline styles
+                    gsap.set(card, { clearProps: "all" });
+                    otherCards.forEach(c => {
+                        c.classList.remove("blurred");
+                        gsap.set(c, { clearProps: "all" });
+                    });
+                    
+                    activeCard = null;
+                    card.focus();
+                }
+            });
+            
+            // Step 1: Fade out detail content
+            closeTL.to(cardDetail, {
+                opacity: 0,
+                y: -10,
+                duration: 0.2,
+                ease: "power2.in"
+            }, 0);
+            
+            // Step 2: Animate card back to original position
+            if (!prefersReducedMotion && originalRect) {
+                const currentRect = card.getBoundingClientRect();
+                const translateX = originalRect.left + originalRect.width / 2 - (currentRect.left + currentRect.width / 2);
+                const translateY = originalRect.top + originalRect.height / 2 - (currentRect.top + currentRect.height / 2);
+                
+                closeTL
+                    .to(card, {
+                        x: translateX,
+                        y: translateY,
+                        scale: 1,
+                        width: originalRect.width,
+                        height: originalRect.height,
+                        duration: animationDuration / 1000,
+                        ease: "power2.inOut"
+                    }, 0.1)
+                    .set(card, {
+                        position: "relative",
+                        top: "auto",
+                        left: "auto",
+                        clearProps: "x,y,transform"
+                    });
+            }
+            
+            // Step 3: Restore other cards and fade overlay
+            closeTL
+                .to(otherCards, {
+                    scale: 1,
+                    opacity: 1,
+                    filter: "blur(0px)",
+                    duration: animationDuration / 1000,
+                    stagger: 0.02,
+                    ease: "power2.out"
+                }, 0.1)
+                .to(bentoOverlay, {
+                    opacity: 0,
+                    duration: animationDuration / 1000,
+                    ease: "power1.in"
+                }, 0.1);
+        };
+
+        // Close on outside click
+        bentoOverlay.addEventListener("click", function(e) {
+            if (activeCard) {
+                window.closeBentoCard(e);
+            }
+        });
+
+        // ESC key to close
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape" && activeCard) {
+                window.closeBentoCard(e);
+            }
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener("resize", function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (activeCard && window.innerWidth >= 768) {
+                    document.body.style.overflow = "";
+                }
+            }, 250);
+        });
+
+        // Animated Statistics Counter
+        const statNumbers = document.querySelectorAll(".stat-number");
+        
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute("data-target"));
+            const suffix = stat.textContent.includes("%") ? "%" : "";
+            
+            ScrollTrigger.create({
+                trigger: stat,
+                start: "top 80%",
+                onEnter: () => {
+                    gsap.to({ value: 0 }, {
+                        value: target,
+                        duration: 2,
+                        ease: "power2.out",
+                        onUpdate: function() {
+                            const current = Math.floor(this.targets()[0].value);
+                            stat.textContent = current + suffix;
+                        }
+                    });
+                }
+            });
+        });
+
+        // Flip Animation for Freeze Cards - Click to expand
+        const freezeCards = document.querySelectorAll(".freeze-card");
+        freezeCards.forEach(card => {
+            card.style.cursor = "pointer";
+            card.addEventListener("click", function(e) {
+                e.stopPropagation();
+                const state = Flip.getState(card, { props: "backgroundColor,boxShadow,transform" });
+                
+                // Toggle active state
+                const isActive = card.classList.toggle("active");
+                
+                if (isActive) {
+                    card.style.backgroundColor = "#E8F5E9";
+                    card.style.boxShadow = "0 20px 60px rgba(27, 115, 64, 0.15)";
+                    card.style.transform = "scale(1.02)";
+                } else {
+                    card.style.backgroundColor = "";
+                    card.style.boxShadow = "";
+                    card.style.transform = "";
+                }
+
+                Flip.from(state, {
+                    duration: 0.5,
+                    ease: "power1.inOut",
+                    absolute: false,
+                    scale: true
+                });
+            });
+        });
+
+        // Simple Inertia-like effect for stats cards (without premium plugin)
+        const statsCards = document.querySelectorAll(".vellum-glass.rounded-xl.p-5");
+        statsCards.forEach(card => {
+            let velocityX = 0;
+            let velocityY = 0;
+            let isPressed = false;
+            let startX, startY, currentX = 0, currentY = 0;
+
+            card.addEventListener("mousedown", (e) => {
+                isPressed = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                card.style.cursor = "grabbing";
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!isPressed) return;
+                currentX = e.clientX - startX;
+                currentY = e.clientY - startY;
+                velocityX = currentX;
+                velocityY = currentY;
+                gsap.set(card, { x: currentX * 0.3, y: currentY * 0.3 });
+            });
+
+            document.addEventListener("mouseup", () => {
+                if (!isPressed) return;
+                isPressed = false;
+                card.style.cursor = "grab";
+                
+                // Apply momentum
+                gsap.to(card, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+                currentX = 0;
+                currentY = 0;
+            });
+        });
+
+        // Motion.dev 3D Camera Animation - Subtle effect
+        const cameraRotation = motionValue({ x: 0, y: 0 });
+        
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener("mousemove", (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 8;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 8;
+        });
+
+        // Smooth camera follow
+        function updateCamera() {
+            animate(cameraRotation, { x: mouseX, y: mouseY }, { duration: 0.8 });
+            requestAnimationFrame(updateCamera);
+        }
+        updateCamera();
+
+        cameraRotation.subscribe(({ x, y }) => {
+            const heroContent = document.querySelector(".hero-section > div");
+            if (heroContent) {
+                heroContent.style.transform = `perspective(1000px) rotateY(${x * 0.3}deg) rotateX(${-y * 0.2}deg)`;
+            }
+        });
+
+        // Refresh on resize
+        window.addEventListener("resize", () => {
+            smoother.refresh();
+            ScrollTrigger.refresh();
+        });
+    </script>
+
+    <script>
+        // Hero 3D Background - Trustworthy, Secure, Professional, Empowering
+        const heroCanvas = document.getElementById('hero-canvas');
+        const heroScene = new THREE.Scene();
+        const heroCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        heroCamera.position.z = 30;
+        
+        const heroRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
+        heroRenderer.setSize(window.innerWidth, window.innerHeight);
+        heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create shield-like geometry representing security
+        const shieldGroup = new THREE.Group();
+
+        // Central shield structure - represents security and trust
+        const shieldGeometry = new THREE.TorusGeometry(8, 0.3, 16, 100);
+        const shieldMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x1B7340, 
+            transparent: true, 
+            opacity: 0.3,
+            wireframe: true
+        });
+        const shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
+        shieldGroup.add(shield);
+
+        // Inner ring - represents inner strength
+        const innerRingGeometry = new THREE.TorusGeometry(5, 0.2, 16, 100);
+        const innerRingMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x2D8B5A, 
+            transparent: true, 
+            opacity: 0.4,
+            wireframe: true
+        });
+        const innerRing = new THREE.Mesh(innerRingGeometry, innerRingMaterial);
+        shieldGroup.add(innerRing);
+
+        // Core ring - represents core protection
+        const coreRingGeometry = new THREE.TorusGeometry(2.5, 0.15, 16, 100);
+        const coreRingMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x4AAD7C, 
+            transparent: true, 
+            opacity: 0.5,
+            wireframe: true
+        });
+        const coreRing = new THREE.Mesh(coreRingGeometry, coreRingMaterial);
+        shieldGroup.add(coreRing);
+
+        // Floating particles representing data points being protected
+        const particleCount = 200;
+        const particleGeometry = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        const particleSizes = new Float32Array(particleCount);
+
+        for(let i = 0; i < particleCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI;
+            const radius = 10 + Math.random() * 15;
+            
+            particlePositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            particlePositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            particlePositions[i * 3 + 2] = radius * Math.cos(phi);
+            particleSizes[i] = Math.random() * 2 + 1;
+        }
+
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        particleGeometry.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
+
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0x1B7340,
+            size: 0.08,
+            transparent: true,
+            opacity: 0.6,
+            sizeAttenuation: true
+        });
+
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        shieldGroup.add(particles);
+
+        // Ascending bars representing growth and empowerment (like the logo)
+        const barGroup = new THREE.Group();
+        const barColors = [0x4AAD7C, 0x2D8B5A, 0x1B7340];
+        const barHeights = [4, 6, 8];
+        
+        for(let i = 0; i < 3; i++) {
+            const barGeometry = new THREE.BoxGeometry(1.5, barHeights[i], 0.3);
+            const barMaterial = new THREE.MeshBasicMaterial({ 
+                color: barColors[i], 
+                transparent: true, 
+                opacity: 0.15
+            });
+            const bar = new THREE.Mesh(barGeometry, barMaterial);
+            bar.position.x = 15 + i * 2.5;
+            bar.position.y = barHeights[i] / 2 - 4;
+            barGroup.add(bar);
+
+            // Bar edges for definition
+            const edgeGeometry = new THREE.EdgesGeometry(barGeometry);
+            const edgeMaterial = new THREE.LineBasicMaterial({ 
+                color: barColors[i], 
+                transparent: true, 
+                opacity: 0.4
+            });
+            const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+            edges.position.copy(bar.position);
+            barGroup.add(edges);
+        }
+
+        shieldGroup.add(barGroup);
+
+        // Connecting lines representing network/connections
+        const lineGroup = new THREE.Group();
+        for(let i = 0; i < 20; i++) {
+            const lineGeometry = new THREE.BufferGeometry();
+            const startPoint = new THREE.Vector3(
+                (Math.random() - 0.5) * 30,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 10
+            );
+            const endPoint = new THREE.Vector3(
+                (Math.random() - 0.5) * 30,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 10
+            );
+            lineGeometry.setFromPoints([startPoint, endPoint]);
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x2D8B5A, 
+                transparent: true, 
+                opacity: 0.1
+            });
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            lineGroup.add(line);
+        }
+        shieldGroup.add(lineGroup);
+
+        shieldGroup.position.x = 5;
+        heroScene.add(shieldGroup);
+
+        // Animation
+        let heroTime = 0;
+        function animateHero() {
+            requestAnimationFrame(animateHero);
+            heroTime += 0.005;
+
+            // Gentle rotation for the main shield - conveys stability
+            shield.rotation.z = heroTime * 0.1;
+            innerRing.rotation.z = -heroTime * 0.15;
+            coreRing.rotation.z = heroTime * 0.2;
+
+            // Subtle tilt for depth
+            shieldGroup.rotation.y = Math.sin(heroTime * 0.3) * 0.1;
+            shieldGroup.rotation.x = Math.cos(heroTime * 0.2) * 0.05;
+
+            // Particles gentle floating
+            const positions = particles.geometry.attributes.position.array;
+            for(let i = 0; i < particleCount; i++) {
+                positions[i * 3 + 1] += Math.sin(heroTime + i * 0.1) * 0.005;
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            // Bars subtle animation
+            barGroup.children.forEach((child, index) => {
+                if(child.isMesh) {
+                    child.position.y += Math.sin(heroTime * 2 + index) * 0.002;
+                }
+            });
+
+            heroRenderer.render(heroScene, heroCamera);
+        }
+        animateHero();
+
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            heroCamera.aspect = window.innerWidth / window.innerHeight;
+            heroCamera.updateProjectionMatrix();
+            heroRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Mouse interaction for subtle parallax
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+            
+            shieldGroup.rotation.y = mouseX * 0.1;
+            shieldGroup.rotation.x = mouseY * 0.05;
+        });
+    </script>
+
+</body></html>

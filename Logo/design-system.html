@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Up Financial | Design System & Wireframes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@200;300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    
+    <!-- GSAP Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- GSAP Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollSmoother.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/InertiaPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+    
+    <!-- Motion.dev -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/motion@12.23.24/+esm"></script>
+    
+    <style>
+        body { 
+            margin: 0; 
+            overflow-x: hidden; 
+            background-color: #FDFCF8; 
+            color: #1C1917; 
+        }
+        .vellum-glass {
+            background: rgba(253, 252, 248, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(28, 25, 23, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 20px 40px -4px rgba(28, 25, 23, 0.05);
+        }
+        ::selection { background: #E7E5E4; color: #1C1917; }
+        .grid-overlay {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(28, 25, 23, 0.03) 1px, transparent 1px), 
+                              linear-gradient(to bottom, rgba(28, 25, 23, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+        }
+        
+        /* Wireframe Gallery Styles */
+        .wireframe-gallery-container {
+            height: 500vh;
+            position: relative;
+        }
+        .wireframe-gallery-container > div {
+            position: sticky;
+            top: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+        .wireframe-group {
+            display: flex;
+        }
+        .wireframe-item {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .wireframe-item img {
+            max-width: 90%;
+            max-height: 80%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        .progress-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: #1B7340;
+            bottom: 50px;
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 1000;
+        }
+        
+        /* Dashboard Card Styles */
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        /* Family Dialog Styles */
+        .family-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            z-index: 2000;
+            pointer-events: none;
+        }
+        .family-dialog.active {
+            pointer-events: all;
+        }
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1999;
+        }
+        .dialog-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Inertia Target */
+        .inertia-target {
+            cursor: grab;
+        }
+        .inertia-target:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+
+<body style="font-family: 'Inter', sans-serif;" class="antialiased">
+    <div class="fixed inset-0 pointer-events-none grid-overlay z-0"></div>
+    
+    <!-- ScrollSmoother Wrapper -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <!-- Header -->
+            <header class="flex justify-between items-center p-6 md:p-8 lg:px-12 relative z-20 vellum-glass sticky top-0">
+                <div class="flex items-center gap-3">
+                    <a href="generated-page.html" class="flex items-center gap-3">
+                        <svg viewBox="0 0 100 120" class="w-10 h-12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 90 L5 30 L25 30 L25 90 L5 90" fill="url(#grad1)"></path>
+                            <path d="M15 30 L15 10 L12 15 L15 10 L18 15" stroke="white" stroke-width="2" fill="none"></path>
+                            <path d="M30 90 L30 20 L50 20 L50 90 L30 90" fill="url(#grad2)"></path>
+                            <path d="M40 20 L40 5 L37 10 L40 5 L43 10" stroke="white" stroke-width="2" fill="none"></path>
+                            <path d="M55 90 L55 10 L75 10 L75 90 L55 90" fill="#1B7340"></path>
+                            <path d="M65 10 L65 -5 L62 0 L65 -5 L68 0" stroke="white" stroke-width="2" fill="none"></path>
+                            <defs>
+                                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4AAD7C"></stop>
+                                    <stop offset="100%" style="stop-color:#2D8B5A"></stop>
+                                </linearGradient>
+                                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#2D8B5A"></stop>
+                                    <stop offset="100%" style="stop-color:#1B7340"></stop>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span style="font-family: 'Cormorant Garamond', serif;" class="text-xl md:text-2xl tracking-tight font-medium text-neutral-900">First Up Financial</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="generated-page.html" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Home</a>
+                    <a href="#dashboards" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Dashboards</a>
+                    <a href="#wireframes" style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors uppercase tracking-widest">Wireframes</a>
+                </nav>
+            </header>
+
+            <!-- Hero Section -->
+            <section class="px-6 md:px-8 lg:px-12 pt-20 pb-16">
+                <div class="max-w-7xl mx-auto text-center">
+                    <div class="flex items-center justify-center gap-3 mb-6">
+                        <div class="h-px w-12 bg-emerald-700"></div>
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-emerald-700 uppercase tracking-widest">Design System</span>
+                    </div>
+                    <h1 style="font-family: 'Cormorant Garamond', serif;" class="text-5xl md:text-6xl lg:text-7xl text-neutral-900 leading-tight tracking-tighter mb-6">
+                        Dashboard & Wireframe<br>
+                        <span class="italic font-light text-neutral-500">Preview</span>
+                    </h1>
+                    <p class="max-w-2xl mx-auto text-base md:text-lg text-neutral-600 font-light leading-relaxed">
+                        Explore our interactive dashboards and wireframes showcasing the First Up Financial user experience.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Dashboard Section with Flip Animation -->
+            <section id="dashboards" class="px-6 md:px-8 lg:px-12 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700">Interactive Dashboards</span>
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight mt-4 font-medium text-neutral-900">User Interface Previews</h2>
+                        <p class="mt-4 text-neutral-600 font-light max-w-2xl mx-auto">Click any dashboard card to view in full screen with smooth transitions.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="dashboard-grid">
+                        <!-- Dashboard Card 1 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="1">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:layout-dashboard" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Freeze Hub Dashboard</h3>
+                            <p class="text-sm text-neutral-600 font-light">Main control center for managing credit freezes across all agencies.</p>
+                        </div>
+
+                        <!-- Dashboard Card 2 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="2">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:shield-check" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Protection Status</h3>
+                            <p class="text-sm text-neutral-600 font-light">Real-time monitoring of your credit freeze status across all bureaus.</p>
+                        </div>
+
+                        <!-- Dashboard Card 3 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="3">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:handshake" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Partner Connections</h3>
+                            <p class="text-sm text-neutral-600 font-light">Browse and connect with vetted financial partners safely.</p>
+                        </div>
+
+                        <!-- Dashboard Card 4 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="4">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:file-text" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Document Manager</h3>
+                            <p class="text-sm text-neutral-600 font-light">Store and manage your Hold Harmless agreements securely.</p>
+                        </div>
+
+                        <!-- Dashboard Card 5 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="5">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:bar-chart-3" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Analytics & Insights</h3>
+                            <p class="text-sm text-neutral-600 font-light">Track your financial protection journey with detailed analytics.</p>
+                        </div>
+
+                        <!-- Dashboard Card 6 -->
+                        <div class="dashboard-card vellum-glass rounded-xl p-6 cursor-pointer" data-dashboard="6">
+                            <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                <span class="iconify text-emerald-700" data-icon="lucide:settings" data-width="48" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-neutral-900 mb-2">Settings & Preferences</h3>
+                            <p class="text-sm text-neutral-600 font-light">Customize your experience and manage account settings.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Wireframe Gallery Section with Motion.dev Pinning -->
+            <section id="wireframes" class="px-6 md:px-8 lg:px-12 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <header class="text-center mb-16" style="height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700 mb-4">Wireframe Gallery</span>
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight font-medium text-neutral-900">UX/UI Design Process</h2>
+                        <p class="mt-4 text-neutral-600 font-light max-w-2xl mx-auto">Scroll to explore our design iterations and wireframe concepts.</p>
+                    </header>
+
+                    <div class="wireframe-gallery-container">
+                        <div>
+                            <ul class="wireframe-group">
+                                <li class="wireframe-item">
+                                    <div class="vellum-glass rounded-2xl p-8 max-w-4xl mx-auto">
+                                        <div class="aspect-video bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-lg flex items-center justify-center mb-4">
+                                            <span class="iconify text-neutral-400" data-icon="lucide:smartphone" data-width="64" style="stroke-width: 1.5;"></span>
+                                        </div>
+                                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-center mb-2">Mobile Wireframe #001</h3>
+                                        <p class="text-center text-neutral-600 font-light">Initial mobile app layout concepts</p>
+                                    </div>
+                                </li>
+                                <li class="wireframe-item">
+                                    <div class="vellum-glass rounded-2xl p-8 max-w-4xl mx-auto">
+                                        <div class="aspect-video bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-lg flex items-center justify-center mb-4">
+                                            <span class="iconify text-emerald-600" data-icon="lucide:monitor" data-width="64" style="stroke-width: 1.5;"></span>
+                                        </div>
+                                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-center mb-2">Desktop Wireframe #002</h3>
+                                        <p class="text-center text-neutral-600 font-light">Desktop dashboard layout and navigation</p>
+                                    </div>
+                                </li>
+                                <li class="wireframe-item">
+                                    <div class="vellum-glass rounded-2xl p-8 max-w-4xl mx-auto">
+                                        <div class="aspect-video bg-gradient-to-br from-neutral-100 to-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                                            <span class="iconify text-emerald-700" data-icon="lucide:layout-grid" data-width="64" style="stroke-width: 1.5;"></span>
+                                        </div>
+                                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-center mb-2">Component Library #003</h3>
+                                        <p class="text-center text-neutral-600 font-light">Reusable UI components and patterns</p>
+                                    </div>
+                                </li>
+                                <li class="wireframe-item">
+                                    <div class="vellum-glass rounded-2xl p-8 max-w-4xl mx-auto">
+                                        <div class="aspect-video bg-gradient-to-br from-emerald-50 to-neutral-100 rounded-lg flex items-center justify-center mb-4">
+                                            <span class="iconify text-emerald-700" data-icon="lucide:workflow" data-width="64" style="stroke-width: 1.5;"></span>
+                                        </div>
+                                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-center mb-2">User Flow #004</h3>
+                                        <p class="text-center text-neutral-600 font-light">Complete user journey mapping</p>
+                                    </div>
+                                </li>
+                                <li class="wireframe-item">
+                                    <div class="vellum-glass rounded-2xl p-8 max-w-4xl mx-auto">
+                                        <div class="aspect-video bg-gradient-to-br from-neutral-200 to-emerald-200 rounded-lg flex items-center justify-center mb-4">
+                                            <span class="iconify text-emerald-800" data-icon="lucide:palette" data-width="64" style="stroke-width: 1.5;"></span>
+                                        </div>
+                                        <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-center mb-2">Design System #005</h3>
+                                        <p class="text-center text-neutral-600 font-light">Color palette, typography, and spacing system</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <footer class="text-center mt-16" style="height: 30vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <p class="text-neutral-500 text-sm">
+                            Design system by
+                            <a href="#" class="text-emerald-700 hover:text-emerald-800">First Up Financial</a>
+                        </p>
+                    </footer>
+                </div>
+            </section>
+
+            <!-- ScrollTrigger Pinned Section -->
+            <section class="px-6 md:px-8 lg:px-12 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="container-pin vellum-glass rounded-2xl p-12 text-center">
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl font-medium text-neutral-900 mb-8">Interactive Features</h2>
+                        <div class="box-container grid md:grid-cols-3 gap-8 mt-12">
+                            <div class="box vellum-glass rounded-xl p-8">
+                                <span class="iconify text-emerald-700 mb-4" data-icon="lucide:zap" data-width="40" style="stroke-width: 1.5;"></span>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">Fast Performance</h3>
+                                <p class="text-neutral-600 font-light">Optimized for speed and responsiveness</p>
+                            </div>
+                            <div class="box vellum-glass rounded-xl p-8">
+                                <span class="iconify text-emerald-700 mb-4" data-icon="lucide:lock" data-width="40" style="stroke-width: 1.5;"></span>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">Secure by Design</h3>
+                                <p class="text-neutral-600 font-light">Bank-level security for your data</p>
+                            </div>
+                            <div class="box vellum-glass rounded-xl p-8">
+                                <span class="iconify text-emerald-700 mb-4" data-icon="lucide:heart" data-width="40" style="stroke-width: 1.5;"></span>
+                                <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-2xl font-medium mb-3">User Centered</h3>
+                                <p class="text-neutral-600 font-light">Designed with your needs in mind</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inertia Demo Section -->
+            <section class="px-6 md:px-8 lg:px-12 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                        <span style="font-family: 'JetBrains Mono', monospace;" class="text-xs uppercase tracking-widest text-emerald-700">Interactive Elements</span>
+                        <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-4xl md:text-5xl tracking-tight mt-4 font-medium text-neutral-900">Drag & Inertia Effects</h2>
+                        <p class="mt-4 text-neutral-600 font-light max-w-2xl mx-auto">Click and drag the cards below to experience smooth inertia physics.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="inertia-target vellum-glass rounded-xl p-8 cursor-pointer">
+                            <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4 mx-auto">
+                                <span class="iconify text-emerald-700" data-icon="lucide:move" data-width="32" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-center mb-2">Drag Me</h3>
+                            <p class="text-sm text-neutral-600 font-light text-center">Click and drag with inertia</p>
+                        </div>
+                        <div class="inertia-target vellum-glass rounded-xl p-8 cursor-pointer">
+                            <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4 mx-auto">
+                                <span class="iconify text-emerald-700" data-icon="lucide:move" data-width="32" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-center mb-2">Drag Me Too</h3>
+                            <p class="text-sm text-neutral-600 font-light text-center">Smooth physics-based movement</p>
+                        </div>
+                        <div class="inertia-target vellum-glass rounded-xl p-8 cursor-pointer">
+                            <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4 mx-auto">
+                                <span class="iconify text-emerald-700" data-icon="lucide:move" data-width="32" style="stroke-width: 1.5;"></span>
+                            </div>
+                            <h3 style="font-family: 'Cormorant Garamond', serif;" class="text-xl font-medium text-center mb-2">And Me</h3>
+                            <p class="text-sm text-neutral-600 font-light text-center">Natural motion feel</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="px-6 md:px-8 lg:px-12 py-12 border-t border-neutral-200 mt-20">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex items-center gap-3">
+                        <svg viewBox="0 0 100 120" class="w-8 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 90 L5 30 L25 30 L25 90 L5 90" fill="url(#grad1f)"></path>
+                            <path d="M15 30 L15 10 L12 15 L15 10 L18 15" stroke="white" stroke-width="2" fill="none"></path>
+                            <path d="M30 90 L30 20 L50 20 L50 90 L30 90" fill="url(#grad2f)"></path>
+                            <path d="M40 20 L40 5 L37 10 L40 5 L43 10" stroke="white" stroke-width="2" fill="none"></path>
+                            <path d="M55 90 L55 10 L75 10 L75 90 L55 90" fill="#1B7340"></path>
+                            <path d="M65 10 L65 -5 L62 0 L65 -5 L68 0" stroke="white" stroke-width="2" fill="none"></path>
+                            <defs>
+                                <linearGradient id="grad1f" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4AAD7C"></stop>
+                                    <stop offset="100%" style="stop-color:#2D8B5A"></stop>
+                                </linearGradient>
+                                <linearGradient id="grad2f" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#2D8B5A"></stop>
+                                    <stop offset="100%" style="stop-color:#1B7340"></stop>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span style="font-family: 'Cormorant Garamond', serif;" class="text-lg tracking-tight font-medium text-neutral-900">First Up Financial</span>
+                    </div>
+                    <p style="font-family: 'JetBrains Mono', monospace;" class="text-xs text-neutral-400">© 2024 First Up Financial. All rights reserved.</p>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- Family Dialog -->
+    <div class="dialog-overlay" id="dialog-overlay"></div>
+    <div class="family-dialog vellum-glass rounded-2xl p-8 max-w-4xl w-full mx-4" id="family-dialog">
+        <button class="absolute top-4 right-4 p-2 hover:bg-neutral-100 rounded-full transition-colors" id="close-dialog">
+            <span class="iconify text-neutral-600" data-icon="lucide:x" data-width="24" style="stroke-width: 1.5;"></span>
+        </button>
+        <div id="dialog-content" class="mt-8">
+            <!-- Content will be dynamically inserted -->
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progress-bar"></div>
+
+    <script type="module">
+        import { animate, scroll, motionValue, transformValue, styleEffect } from "https://cdn.jsdelivr.net/npm/motion@12.23.24/+esm";
+        
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger, ScrollSmoother, InertiaPlugin, Flip);
+
+        // Initialize ScrollSmoother
+        let smoother = ScrollSmoother.create({
+            wrapper: "#smooth-wrapper",
+            content: "#smooth-content",
+            smooth: 1.5,
+            effects: true,
+            smoothTouch: 0.1
+        });
+
+        // Add effects to dashboard cards
+        smoother.effects(".dashboard-card", { speed: 0.5, lag: 0.1 });
+
+        // Motion.dev Wireframe Gallery Pinning
+        const wireframeItems = document.querySelectorAll(".wireframe-item");
+        const wireframeGroup = document.querySelector(".wireframe-group");
+        const wireframeContainer = document.querySelector(".wireframe-gallery-container > div");
+
+        if (wireframeGroup && wireframeContainer) {
+            // Animate gallery horizontally during vertical scroll
+            scroll(
+                animate(wireframeGroup, {
+                    transform: ["none", `translateX(-${(wireframeItems.length - 1) * 100}vw)`],
+                }),
+                { target: wireframeContainer }
+            );
+
+            // Progress bar representing gallery scroll
+            scroll(
+                animate("#progress-bar", { scaleX: [0, 1] }),
+                { target: wireframeContainer }
+            );
+        }
+
+        // ScrollTrigger Pinned Section with Timeline
+        const pinContainer = document.querySelector(".container-pin");
+        if (pinContainer) {
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: pinContainer,
+                    pin: true,
+                    start: "top top",
+                    end: "+=1000",
+                    scrub: 1,
+                    snap: {
+                        snapTo: "labels",
+                        duration: { min: 0.2, max: 3 },
+                        delay: 0.2,
+                        ease: "power1.inOut"
+                    }
+                }
+            });
+
+            tl.addLabel("start")
+                .from(".box p", { scale: 0.3, rotation: 45, autoAlpha: 0 }, "start")
+                .addLabel("color")
+                .to(".box", { backgroundColor: "#E8F5E9", duration: 0.5 }, "color")
+                .addLabel("spin")
+                .to(".box", { rotation: 360, duration: 1 }, "spin")
+                .addLabel("end");
+        }
+
+        // Flip Animation for Dashboard Cards
+        const dashboardCards = document.querySelectorAll(".dashboard-card");
+        const dialog = document.getElementById("family-dialog");
+        const dialogOverlay = document.getElementById("dialog-overlay");
+        const dialogContent = document.getElementById("dialog-content");
+        const closeDialog = document.getElementById("close-dialog");
+
+        dashboardCards.forEach(card => {
+            card.addEventListener("click", function() {
+                const state = Flip.getState(card);
+                
+                // Create dialog content
+                const title = card.querySelector("h3").textContent;
+                const description = card.querySelector("p").textContent;
+                dialogContent.innerHTML = `
+                    <h2 style="font-family: 'Cormorant Garamond', serif;" class="text-3xl font-medium text-neutral-900 mb-4">${title}</h2>
+                    <p class="text-neutral-600 font-light mb-6">${description}</p>
+                    <div class="aspect-video bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg flex items-center justify-center">
+                        <span class="iconify text-emerald-700" data-icon="lucide:image" data-width="64" style="stroke-width: 1.5;"></span>
+                    </div>
+                    <p class="text-sm text-neutral-500 mt-4 text-center">Dashboard preview would appear here</p>
+                `;
+
+                // Show dialog
+                dialog.classList.add("active");
+                dialogOverlay.classList.add("active");
+
+                // Animate dialog appearance
+                gsap.to(dialog, {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: "back.out(1.7)"
+                });
+                gsap.to(dialogOverlay, {
+                    opacity: 1,
+                    duration: 0.3
+                });
+
+                // Animate card flip
+                Flip.from(state, {
+                    duration: 0.6,
+                    ease: "power1.inOut",
+                    absolute: true
+                });
+            });
+        });
+
+        // Close dialog
+        function closeDialogFunc() {
+            gsap.to(dialog, {
+                scale: 0,
+                opacity: 0,
+                duration: 0.3,
+                ease: "back.in(1.7)",
+                onComplete: () => {
+                    dialog.classList.remove("active");
+                    dialogOverlay.classList.remove("active");
+                }
+            });
+            gsap.to(dialogOverlay, {
+                opacity: 0,
+                duration: 0.3
+            });
+        }
+
+        closeDialog.addEventListener("click", closeDialogFunc);
+        dialogOverlay.addEventListener("click", closeDialogFunc);
+
+        // Inertia Plugin for Draggable Cards
+        const inertiaTargets = document.querySelectorAll(".inertia-target");
+        
+        inertiaTargets.forEach(target => {
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+            let currentY = 0;
+
+            target.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                startX = e.clientX - currentX;
+                startY = e.clientY - currentY;
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                currentX = e.clientX - startX;
+                currentY = e.clientY - startY;
+            });
+
+            document.addEventListener("mouseup", () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                // Apply inertia animation
+                gsap.to(target, {
+                    inertia: {
+                        x: {
+                            velocity: currentX * 2,
+                            max: window.innerWidth / 2,
+                            min: -window.innerWidth / 2,
+                        },
+                        y: {
+                            velocity: currentY * 2,
+                            max: window.innerHeight / 2,
+                            min: -window.innerHeight / 2,
+                        },
+                    },
+                    duration: 1.5,
+                    ease: "power2.out"
+                });
+
+                // Reset after animation
+                setTimeout(() => {
+                    gsap.to(target, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                    currentX = 0;
+                    currentY = 0;
+                }, 1500);
+            });
+        });
+
+        // Motion.dev Style Effects
+        const blurValue = motionValue(0);
+        const filterValue = transformValue(() => `blur(${blurValue.get()}px)`);
+        
+        // Apply blur effect on scroll
+        scroll(
+            animate(blurValue, [0, 5, 0], {
+                duration: 1
+            }),
+            {
+                target: document.body,
+                offset: ["start end", "end start"]
+            }
+        );
+
+        // 3D Camera Animation with Motion.dev
+        const cameraRotation = motionValue({ x: 0, y: 0 });
+        
+        document.addEventListener("mousemove", (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            animate(cameraRotation, { x, y }, { duration: 0.5 });
+        });
+
+        // Apply 3D transform to hero section
+        const heroSection = document.querySelector("section");
+        if (heroSection) {
+            cameraRotation.subscribe(({ x, y }) => {
+                heroSection.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg)`;
+            });
+        }
+
+        // Update on resize
+        window.addEventListener("resize", () => {
+            smoother.refresh();
+            ScrollTrigger.refresh();
+        });
+    </script>
+</body>
+</html>
+
