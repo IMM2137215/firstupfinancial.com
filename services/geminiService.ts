@@ -1,7 +1,26 @@
 import { GoogleGenAI } from "@google/genai";
 import { CreditAccount } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Lazy initialization - only create client when API key is available
+let ai: GoogleGenAI | null = null;
+
+const getAI = (): GoogleGenAI | null => {
+  if (ai) return ai;
+  
+  const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn('Gemini API key not found. AI features will be disabled.');
+    return null;
+  }
+  
+  try {
+    ai = new GoogleGenAI({ apiKey });
+    return ai;
+  } catch (error) {
+    console.error('Failed to initialize Gemini AI:', error);
+    return null;
+  }
+};
 
 // Analyze for factual inconsistencies across bureaus
 export const analyzeCreditAccount = async (account: CreditAccount): Promise<string> => {
@@ -23,8 +42,13 @@ export const analyzeCreditAccount = async (account: CreditAccount): Promise<stri
     Keep the tone professional and analytical. Do not promise a deletion.
   `;
 
+  const client = getAI();
+  if (!client) {
+    return "AI analysis is currently unavailable. Please configure your API key to enable this feature.";
+  }
+
   try {
-    const response = await ai.models.generateContent({
+    const response = await client.models.generateContent({
       model: modelId,
       contents: prompt,
     });
@@ -74,8 +98,13 @@ export const generateDisputeLetter = async (
     `;
   }
 
+  const client = getAI();
+  if (!client) {
+    return "Letter generation is currently unavailable. Please configure your API key to enable this feature.";
+  }
+
   try {
-    const response = await ai.models.generateContent({
+    const response = await client.models.generateContent({
       model: modelId,
       contents: promptContext,
     });
